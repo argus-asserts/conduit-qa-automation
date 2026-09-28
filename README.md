@@ -277,8 +277,7 @@ npm start
 Unlike the Node/npm tooling, MariaDB doesn't unload automatically when you `cd` out — direnv has no equivalent "on exit" hook, so the server keeps running in the background even after you leave the folder. It's harmless (bound only to this project's local socket/port), but if you want to shut it down explicitly:
 
 ```bash
-mariadb-admin --socket="$PWD/.devdb/mysql.sock" shutdown
-```
+mariadb-admin --socket="$PWD/.devdb/mysql.sock" -u root shutdown   # -u root required: connecting with no -u uses your OS username, which has no privileges under this auth setup```
 
 ## 🐛 Troubleshooting
 
