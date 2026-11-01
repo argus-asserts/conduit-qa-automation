@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": ">=22"
+  },
   "name": "conduit-realworld-example-app",
   "version": "1.0.0",
   "description": "RealWorld example app, created to demonstrate a fully fledged fullstack application built with React / Express.js / Sequelize / PostgreSQL including CRUD operations, authentication, routing, pagination, and more.",
@@ -19,7 +22,14 @@
     "dev": "concurrently --names 'Node,Vite' -c 'green,blue' 'npm run dev -w backend' 'npm run dev -w frontend'",
     "sqlz": "npx -w backend sequelize-cli",
     "start": "npm run build -w frontend && npm run start -w backend",
-    "test": "vitest"
+    "test": "vitest",
+    "setup": "npm ci && npm run db:up && npm run db:prepare",
+    "db:up": "docker compose up -d --wait db",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && npm run db:up && npm run db:prepare",
+    "db:prepare": "npm run db:migrate && npm run db:seed",
+    "db:migrate": "npx -w backend sequelize-cli db:migrate",
+    "db:seed": "npx -w backend sequelize-cli db:seed:all"
   },
   "devDependencies": {
     "@vitejs/plugin-react-swc": "^4.2.3",
