@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16
+    container_name: conduit-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: conduit
+      POSTGRES_PASSWORD: conduit
+      POSTGRES_DB: conduit
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U conduit -d conduit"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  db_data:
