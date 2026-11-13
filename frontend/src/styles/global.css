@@ -1,0 +1,1485 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ * Conduit — Charcoal + Coral Accessible Theme (React)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Every value used below comes from tokens.css. To swap themes, replace
+ * tokens.css — nothing in this file needs to change.
+ *
+ * ── Load order (important) ─────────────────────────────────────────
+ *   import './styles/tokens.css';
+ *   import './styles/global.css';
+ *
+ * ── Contents ───────────────────────────────────────────────────────
+ *   1.  Selection & target
+ *   2.  Reset
+ *   3.  Base typography
+ *   4.  Container / grid
+ *   5.  Forms
+ *   6.  Buttons
+ *   7.  Nav
+ *   8.  Navbar (sticky chrome)
+ *   9.  Cards
+ *   10. Pagination
+ *   11. Tags
+ *   12. Footer (fixed chrome)
+ *   13. Error messages
+ *   14. Banner
+ *   15. Article preview & meta
+ *   16. Home page
+ *   17. Article page
+ *   18. Profile page
+ *   19. Editor page
+ *   20. Utilities
+ *   21. Accessibility (reduced-motion, forced-colors)
+ *
+ * ── Contributing ───────────────────────────────────────────────────
+ *   • Plain global CSS. No Angular, no CSS Modules. One import in
+ *     src/main.tsx (or pages/_app.tsx, app/layout.tsx).
+ *
+ *   • Append new component rules at the end of their section. Use
+ *     tokens (var(--space-4), var(--brand), etc.), never hex values.
+ *     If you need a new color, add it to tokens.css first.
+ *
+ *   • The footer is position:fixed. body reserves --footer-height of
+ *     space above it AND footer has min-height:var(--footer-height)
+ *     so the two always match. Change --footer-height if the footer
+ *     content grows.
+ *
+ *   • The navbar is position:sticky. html scroll-padding accounts for
+ *     its height. Update --navbar-height in tokens.css if the rendered
+ *     navbar is taller than 3.5rem.
+ *
+ *   • Link color changes use :focus-visible, not :focus. This means
+ *     hover and keyboard focus change the color, but clicking a link
+ *     with a mouse doesn't leave it permanently colored. If you add
+ *     new interactive elements that should visually respond to click,
+ *     use :active — not :focus.
+ *
+ *   • The brand marks (.navbar-brand, footer .logo-font) keep their
+ *     chrome-text color in every state. On hover they dim to
+ *     opacity 0.8 as interaction feedback — they never turn coral.
+ *     Logos are chrome, not links.
+ *
+ *   • Form inputs use a light fill + subtle border when unfocused,
+ *     snapping to a white fill + coral border + 2px-offset near-black
+ *     ring on focus. `appearance: none` + explicit border-radius on
+ *     :focus + the -webkit-autofill block together prevent browsers
+ *     from rendering square corners.
+ *
+ *   • Conduit's signin/signup templates wrap inputs in <fieldset>. The
+ *     fieldset reset below zeroes the UA's default 2px groove border —
+ *     without it, a square outline appears around rounded inputs.
+ *     Do not remove this reset.
+ * ═══════════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * SELECTION / TARGET
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+::selection {
+  background-color: var(--brand-fill);
+  color: var(--on-brand);
+}
+
+::target-text {
+  background-color: var(--brand-soft-active);
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * RESET
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-block-start: var(--navbar-height);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-block-end: var(--footer-height);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: var(--lh-body);
+  color: var(--text);
+  background-color: var(--surface);
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#root > * {
+  flex-shrink: 0;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+/* Conduit's signin/signup templates wrap inputs in <fieldset>. Without
+ * this reset, the UA's default 2px groove border draws a square around
+ * rounded inputs. */
+fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  margin: 0;
+  border-radius: 0;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  inline-size: 1em;
+  block-size: 1em;
+  accent-color: var(--brand);
+}
+
+button,
+html input[type="button"],
+input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+textarea {
+  overflow: auto;
+  resize: vertical;
+}
+
+a,
+area,
+button,
+[role="button"],
+input,
+label,
+select,
+summary,
+textarea {
+  touch-action: manipulation;
+}
+
+:focus {
+  outline: none;
+}
+
+:where(:target, [id]) {
+  scroll-margin-block-start: calc(var(--navbar-height) + 1.5rem);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * BASE
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+hr {
+  margin-block: var(--space-4);
+  border: 0;
+  border-block-start: 1px solid var(--border);
+}
+
+a {
+  color: var(--brand);
+  text-decoration: none;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.15em;
+  text-decoration-skip-ink: auto;
+  background-color: transparent;
+  transition: color 0.15s ease;
+}
+
+/* :focus-visible, not :focus — mouse clicks don't permanently color
+ * a link. Keyboard users still see the hover state via tab focus. */
+a:focus-visible,
+a:hover {
+  color: var(--brand-emphasis);
+  text-decoration: underline;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--brand-emphasis) 80%,
+    transparent
+  );
+}
+
+a:not([href]) {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:not([href]):focus-visible,
+a:not([href]):hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+  border: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-block-end: var(--space-2);
+  font-weight: 500;
+  line-height: var(--lh-tight);
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.75rem;
+}
+h4 {
+  font-size: 1.5rem;
+}
+h5 {
+  font-size: 1.25rem;
+}
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin-block-end: var(--space-4);
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: inherit;
+}
+
+.logo-font {
+  font-family: var(--font-serif);
+}
+
+.navbar-logo {
+  height: 1.25rem;
+  vertical-align: middle;
+}
+
+.banner-logo {
+  height: 3rem;
+}
+
+.footer-logo {
+  height: 1rem;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * CONTAINER / GRID
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 15px;
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 940px;
+  }
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -15px;
+}
+
+.col-xs-12 {
+  position: relative;
+  min-height: 1px;
+  padding-inline: 15px;
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .col-md-3,
+  .col-md-6,
+  .col-md-8,
+  .col-md-9,
+  .col-md-10,
+  .col-md-12 {
+    position: relative;
+    min-height: 1px;
+    padding-inline: 15px;
+  }
+  .col-md-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+  .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  .col-md-8 {
+    flex: 0 0 66.66667%;
+    max-width: 66.66667%;
+  }
+  .col-md-9 {
+    flex: 0 0 75%;
+    max-width: 75%;
+  }
+  .col-md-10 {
+    flex: 0 0 83.33333%;
+    max-width: 83.33333%;
+  }
+  .col-md-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .offset-md-1 {
+    margin-inline-start: 8.33333%;
+  }
+  .offset-md-2 {
+    margin-inline-start: 16.66667%;
+  }
+  .offset-md-3 {
+    margin-inline-start: 25%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * FORMS
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: 1rem;
+  line-height: var(--lh-snug);
+  color: var(--text);
+  background-color: var(--surface-input);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  -webkit-appearance: none;
+  appearance: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.form-control:focus {
+  background-color: var(--surface);
+  border-color: var(--input-focus);
+  border-radius: 0.5rem;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: var(--surface-disabled);
+  opacity: 1;
+}
+
+.form-control:disabled {
+  cursor: not-allowed;
+}
+
+.form-control:-webkit-autofill,
+.form-control:-webkit-autofill:hover,
+.form-control:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface-input) inset;
+  -webkit-text-fill-color: var(--text);
+  border-radius: 0.5rem;
+}
+
+.form-control-lg {
+  padding: var(--space-3) var(--space-5);
+  font-size: 1.25rem;
+  border-radius: 0.75rem;
+}
+
+.form-group {
+  margin-block-end: var(--space-4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * BUTTONS
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.btn {
+  display: inline-block;
+  font-weight: normal;
+  line-height: var(--lh-snug);
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: var(--space-2) var(--space-4);
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.btn:focus,
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn.disabled,
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+a.btn.disabled {
+  pointer-events: none;
+}
+
+.btn-primary {
+  color: var(--on-brand);
+  background-color: var(--brand-fill);
+  border-color: var(--brand-fill);
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  color: var(--on-brand);
+  background-color: var(--brand-hover);
+  border-color: var(--brand-hover);
+}
+.btn-primary:active {
+  color: var(--on-brand);
+  background-color: var(--brand-active);
+  border-color: var(--brand-active);
+}
+.btn-primary.disabled,
+.btn-primary:disabled {
+  color: var(--on-brand);
+  background-color: var(--brand-disabled);
+  border-color: var(--brand-disabled);
+}
+
+.btn-secondary {
+  color: var(--on-brand);
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+}
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+  color: var(--on-brand);
+  background-color: var(--secondary-hover);
+  border-color: var(--secondary-border);
+}
+.btn-secondary.disabled,
+.btn-secondary:disabled {
+  color: var(--text-muted);
+  background-color: var(--surface-disabled);
+  border-color: var(--surface-disabled);
+}
+
+.btn-outline-primary {
+  color: var(--brand);
+  background-color: transparent;
+  border-color: var(--brand);
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  color: var(--on-brand);
+  background-color: var(--brand-fill);
+  border-color: var(--brand-fill);
+}
+.btn-outline-primary.disabled,
+.btn-outline-primary:disabled {
+  border-color: var(--brand-light);
+}
+
+.btn-outline-secondary {
+  color: var(--secondary);
+  background-color: transparent;
+  border-color: var(--secondary);
+}
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+  color: var(--on-brand);
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+}
+.btn-outline-secondary.disabled,
+.btn-outline-secondary:disabled {
+  border-color: var(--border);
+}
+
+.btn-outline-danger {
+  color: var(--danger);
+  background-color: transparent;
+  border-color: var(--danger);
+}
+.btn-outline-danger:hover,
+.btn-outline-danger:focus,
+.btn-outline-danger:active {
+  color: var(--on-brand);
+  background-color: var(--danger);
+  border-color: var(--danger);
+}
+.btn-outline-danger.disabled,
+.btn-outline-danger:disabled {
+  border-color: var(--danger-light);
+}
+
+.btn-lg {
+  padding: var(--space-3) var(--space-5);
+  font-size: 1.25rem;
+  border-radius: 0.625rem;
+}
+.btn-sm {
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * NAV
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.nav-link {
+  display: inline-block;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.nav-link:focus,
+.nav-link:hover {
+  text-decoration: none;
+}
+
+.nav-link.disabled {
+  color: var(--text-muted);
+  pointer-events: none;
+  background-color: transparent;
+}
+
+.nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.nav-pills .nav-item + .nav-item {
+  margin-inline-start: 0.2rem;
+}
+
+.nav-pills .nav-link {
+  display: block;
+  padding: 0.5em 1em;
+  border-radius: 0.5rem;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--on-brand);
+  cursor: default;
+  background-color: var(--brand-fill);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * NAVBAR (sticky charcoal chrome)
+ *
+ * The brand mark is locked to --chrome-text at every interaction state.
+ * On hover it dims to opacity 0.8 — subtle feedback without breaking the
+ * charcoal frame. The focus ring still shows for keyboard users (via the
+ * global :focus-visible outline rule).
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.navbar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--chrome-bg);
+  box-shadow: var(--shadow-navbar);
+}
+
+.navbar > .container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.navbar-brand,
+.navbar-brand:link,
+.navbar-brand:visited,
+.navbar-brand:active,
+.navbar-brand:focus,
+.navbar-brand:focus-visible {
+  padding-block: 0 0.25rem;
+  margin-inline-end: var(--space-6);
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--chrome-text);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.navbar-brand:hover {
+  color: var(--chrome-text);
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-inline-start: auto;
+}
+
+.navbar-nav .nav-link {
+  display: block;
+  padding-block: 0.425rem;
+}
+
+.navbar-nav .nav-link + .nav-link {
+  margin-inline-start: var(--space-4);
+}
+
+.navbar-nav .nav-item + .nav-item {
+  margin-inline-start: var(--space-4);
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: var(--chrome-text-muted);
+}
+
+.navbar-light .navbar-nav .nav-link:focus-visible,
+.navbar-light .navbar-nav .nav-link:hover {
+  color: var(--chrome-text);
+}
+
+.navbar-light .navbar-nav .active > .nav-link,
+.navbar-light .navbar-nav .nav-link.active {
+  color: var(--chrome-text);
+}
+
+.navbar .nav-link.disabled,
+.navbar .nav-link.disabled:focus {
+  color: var(--chrome-text-muted);
+  opacity: 0.55;
+}
+
+.navbar :focus-visible {
+  outline-color: var(--chrome-link-hover);
+}
+
+.nav-link .user-pic {
+  height: 26px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline-end: 5px;
+}
+
+.nav-signup {
+  color: var(--on-brand) !important;
+  background: var(--brand-fill);
+  border: 1px solid var(--brand-fill);
+  border-radius: 99em;
+  padding: 5px 12px !important;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  transition:
+    background 200ms ease,
+    border-color 200ms ease;
+}
+
+.nav-signup:hover,
+.nav-signup:focus {
+  color: var(--on-brand) !important;
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+}
+
+.nav-pills.outline-active .nav-link {
+  border-radius: 0;
+  border: none;
+  border-block-end: 2px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.nav-pills.outline-active .nav-link:hover {
+  color: var(--text);
+}
+
+.nav-pills.outline-active .nav-link.active {
+  background: var(--surface);
+  border-block-end: 2px solid var(--brand);
+  color: var(--brand);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * CARDS
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.card {
+  position: relative;
+  display: block;
+  margin-block-end: var(--space-3);
+  background-color: var(--surface);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card:focus-within {
+  border-color: var(--brand);
+  box-shadow:
+    0 0 0 2px var(--brand),
+    var(--shadow-card-hover);
+}
+
+.card-block {
+  padding: var(--space-5);
+}
+
+.card-text:last-child {
+  margin-block-end: 0;
+}
+
+.card-footer {
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--surface-muted);
+  border-block-start: 1px solid var(--border);
+}
+
+.card-block::after,
+.card-footer::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.card-footer:last-child {
+  border-end-start-radius: 0.75rem;
+  border-end-end-radius: 0.75rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * PAGINATION
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.pagination {
+  display: inline-block;
+  margin-block: var(--space-4);
+}
+
+.page-item {
+  display: inline;
+}
+
+.page-item:first-child .page-link {
+  margin-inline-start: 0;
+  border-start-start-radius: 0.5rem;
+  border-end-start-radius: 0.5rem;
+}
+
+.page-item:last-child .page-link {
+  border-start-end-radius: 0.5rem;
+  border-end-end-radius: 0.5rem;
+}
+
+.page-item.active .page-link {
+  z-index: 2;
+  color: var(--text);
+  cursor: default;
+  background-color: var(--brand-soft-active);
+  border-color: var(--brand);
+}
+
+.page-item.disabled .page-link {
+  color: var(--text-muted);
+  pointer-events: none;
+  background-color: var(--surface);
+  border-color: var(--border);
+}
+
+.page-link {
+  position: relative;
+  float: inline-start;
+  padding: var(--space-2) var(--space-3);
+  margin-inline-start: -1px;
+  color: var(--brand);
+  text-decoration: none;
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.page-link:focus-visible,
+.page-link:hover {
+  color: var(--brand-emphasis);
+  background-color: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * TAGS
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.tag-pill {
+  padding-inline: 0.6em;
+  border-radius: 10rem;
+}
+
+.tag-default {
+  background-color: transparent;
+  color: var(--brand-emphasis);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.8rem;
+  line-height: 1.1rem;
+  padding: 0.35rem 0.75rem;
+  white-space: nowrap;
+  margin-inline-end: var(--space-2);
+  margin-block-end: var(--space-2);
+  display: inline-block;
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease;
+}
+
+.tag-default:hover,
+.tag-default[href]:focus-visible,
+.tag-default[href]:hover {
+  text-decoration: none;
+  background-color: var(--brand-soft);
+}
+
+.tag-default:focus-visible {
+  border-radius: 100px;
+  outline-offset: 1px;
+}
+
+.tag-default.tag-outline {
+  color: var(--text-muted);
+  background: none;
+}
+
+ul.tag-list {
+  display: inline-block;
+}
+ul.tag-list li {
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * FOOTER (fixed charcoal chrome)
+ *
+ * Same rule as the navbar brand: footer .logo-font is a logo mark and
+ * stays --chrome-text at all interaction states. On hover it dims to
+ * opacity 0.8. Other footer links (attribution) keep their normal hover
+ * behavior.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+footer {
+  position: fixed;
+  inset-block-end: 0;
+  inset-inline: 0;
+  z-index: 10;
+  min-height: var(--footer-height);
+  background: var(--chrome-bg);
+  color: var(--chrome-text);
+  border-block-start: 1px solid var(--chrome-border);
+  box-shadow: var(--chrome-shadow-top);
+  padding-block-start: var(--space-4);
+  padding-block-end: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  width: 100%;
+}
+
+footer .logo-font,
+footer .logo-font:link,
+footer .logo-font:visited,
+footer .logo-font:active,
+footer .logo-font:focus,
+footer .logo-font:focus-visible {
+  color: var(--chrome-text);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+footer .logo-font:hover {
+  color: var(--chrome-text);
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+footer a {
+  color: var(--chrome-text);
+  transition: color 0.15s ease;
+}
+
+footer a:hover,
+footer a:focus-visible {
+  color: var(--chrome-link-hover);
+  text-decoration: underline;
+}
+
+footer .attribution {
+  margin-inline-start: 10px;
+  font-size: 0.8rem;
+  color: var(--chrome-text-muted);
+  font-weight: 300;
+}
+
+footer > .container {
+  display: flex;
+  align-items: center;
+  max-width: var(--content-width);
+  margin-inline: auto;
+}
+
+footer :focus-visible {
+  outline-color: var(--chrome-link-hover);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * ERROR MESSAGES
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.error-messages {
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-inline-start: 4px solid var(--danger);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0 6px 6px 0;
+  font-weight: 600;
+  margin-block-end: var(--space-4);
+  list-style: disc;
+  list-style-position: inside;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * BANNER
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.banner {
+  color: var(--text);
+  background: var(--surface);
+  border-block: 1px solid var(--border);
+  padding: var(--space-6);
+  margin-block-end: var(--space-6);
+}
+
+.banner h1 {
+  margin-block-end: 0;
+}
+
+.container.page {
+  margin-block-start: var(--space-5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * ARTICLE PREVIEW & META
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.preview-link {
+  color: inherit;
+}
+.preview-link:hover {
+  text-decoration: inherit;
+}
+
+.article-meta {
+  display: block;
+  position: relative;
+  font-weight: 300;
+}
+
+.article-meta img {
+  display: inline-block;
+  vertical-align: middle;
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+}
+
+.article-meta .btn + .btn {
+  margin-inline-start: var(--space-2);
+}
+
+.article-meta .info {
+  margin: 0 1.5rem 0 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1rem;
+}
+
+.article-meta .info .author {
+  display: block;
+  font-weight: 500;
+}
+
+.article-meta .info .date {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  display: block;
+}
+
+.article-preview {
+  border-block-start: 1px solid var(--border);
+  border-inline-start: 3px solid transparent;
+  padding: var(--space-5) 0;
+  padding-inline-start: calc(var(--space-5) - 3px);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.article-preview:hover,
+.article-preview:focus-within {
+  background-color: var(--brand-soft);
+  border-inline-start-color: var(--brand);
+}
+
+.article-preview .article-meta {
+  margin-block: 0 var(--space-4);
+}
+
+.article-preview .preview-link h1 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: var(--lh-tight);
+  margin-block-end: 3px;
+}
+
+.article-preview .preview-link p {
+  font-weight: 300;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-block-end: 15px;
+  line-height: 1.3rem;
+}
+
+.article-preview .preview-link span {
+  max-width: 30%;
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+
+.article-preview .preview-link ul {
+  float: inline-end;
+  max-width: 50%;
+  vertical-align: top;
+}
+
+.article-preview .preview-link ul li {
+  font-weight: 300;
+  font-size: 0.8rem;
+}
+
+.btn .counter {
+  font-size: 0.8rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * HOME PAGE
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.home-page .banner p {
+  text-align: center;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-block-end: 0;
+}
+
+.home-page .banner p a {
+  color: var(--brand);
+  text-decoration: underline;
+}
+
+.home-page .banner h1 {
+  font-weight: 700;
+  text-align: center;
+  font-size: clamp(2rem, 1rem + 5vw, 3.5rem);
+  line-height: var(--lh-tight);
+  padding-block-end: var(--space-2);
+}
+
+.home-page .feed-toggle {
+  margin-block-end: -1px;
+}
+
+.home-page .sidebar {
+  margin-inline-start: 10px;
+  padding-inline-start: 20px;
+  background: none;
+  border-inline-start: 1px solid var(--border);
+}
+
+.home-page .sidebar p {
+  margin-block-end: 0.2rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * ARTICLE PAGE
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.article-page .banner {
+  padding-block: var(--space-6);
+}
+
+.article-page .banner h1 {
+  font-size: clamp(1.75rem, 1rem + 4vw, 2.8rem);
+  font-weight: 600;
+}
+
+.article-page .banner .article-meta {
+  margin-block: var(--space-6) 0;
+}
+
+.article-page .banner > .container,
+.article-page .article-content,
+.article-page .article-actions,
+.article-page .container.page > .row {
+  max-width: var(--content-width);
+  margin-inline: auto;
+}
+
+.article-page .article-content [class*="col-"],
+.article-page .container.page > .row > [class*="col-"] {
+  padding-inline: 0;
+  flex: 0 0 100%;
+  max-width: 100%;
+  margin-inline-start: 0;
+}
+
+.article-page .article-content p {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  line-height: var(--lh-loose);
+  margin-block-end: var(--space-6);
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.article-page .article-content li {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.article-page .article-content h1,
+.article-page .article-content h2,
+.article-page .article-content h3,
+.article-page .article-content h4,
+.article-page .article-content h5,
+.article-page .article-content h6 {
+  font-weight: 500;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.01em;
+  margin-block: 1.6rem 1rem;
+}
+
+.article-page .article-content ul {
+  list-style: disc;
+  padding-inline-start: 2.5rem;
+  margin-block-end: var(--space-4);
+}
+
+.article-page .article-content ol {
+  list-style: decimal;
+  padding-inline-start: 2.5rem;
+  margin-block-end: var(--space-4);
+}
+
+.article-page .article-content li::marker {
+  color: var(--brand);
+}
+
+.article-page .article-content img {
+  display: block;
+  margin-inline: auto;
+  margin-block: var(--space-5);
+  border-radius: 8px;
+}
+
+.article-page .article-content > :last-child {
+  margin-block-end: 0;
+}
+
+.article-page .article-actions {
+  text-align: center;
+  margin-block: var(--space-5) var(--space-8);
+}
+
+.article-page .article-actions .article-meta .info {
+  text-align: start;
+}
+
+.article-page .comment-form .card-block {
+  padding: 0;
+}
+
+.article-page .comment-form .card-block textarea {
+  border: 0;
+  padding: var(--space-5);
+}
+
+.article-page .comment-form .card-footer .btn {
+  font-weight: 700;
+  float: inline-end;
+}
+
+.article-page .comment-form .card-footer .comment-author-img {
+  height: 30px;
+  width: 30px;
+}
+
+.article-page .card .card-footer {
+  font-size: 0.8rem;
+  font-weight: 300;
+}
+
+.article-page .card .comment-author-img {
+  display: inline-block;
+  vertical-align: middle;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+}
+
+.article-page .card .comment-author {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.article-page .card .date-posted {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline-start: 5px;
+  color: var(--text-muted);
+}
+
+.article-page .card .mod-options {
+  float: inline-end;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.article-page .card .mod-options i {
+  margin-inline-start: 5px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.article-page .card .mod-options i:hover {
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * PROFILE PAGE
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.profile-page .user-info {
+  text-align: center;
+  background: var(--surface);
+  border-block: 1px solid var(--border);
+  padding-block: var(--space-6) var(--space-4);
+}
+
+.profile-page .user-info .user-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-block-end: var(--space-4);
+}
+
+.profile-page .user-info h4 {
+  font-weight: 700;
+}
+
+.profile-page .user-info p {
+  margin-block: 0 var(--space-2);
+  margin-inline: auto;
+  color: var(--text-muted);
+  max-width: 450px;
+  font-weight: 300;
+}
+
+.profile-page .user-info .action-btn {
+  float: inline-end;
+  color: var(--text-muted);
+  border: 1px solid var(--border-strong);
+}
+
+.profile-page .articles-toggle {
+  margin-block: var(--space-5) -1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * EDITOR PAGE
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.editor-page .tag-list i {
+  font-size: 0.6rem;
+  margin-inline-end: 5px;
+  cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * UTILITIES
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.pull-xs-right {
+  float: inline-end !important;
+}
+
+.text-xs-center {
+  text-align: center !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * ACCESSIBILITY
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .btn,
+  .card,
+  .form-control,
+  .page-link,
+  .tag-default {
+    border: 1px solid CanvasText;
+  }
+
+  a,
+  .page-link {
+    color: LinkText;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    background: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
+
+  .nav-pills .nav-link.active,
+  .nav-pills.outline-active .nav-link.active,
+  .page-item.active .page-link {
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+
+  .navbar,
+  footer {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  .navbar a,
+  .navbar .navbar-brand,
+  footer a,
+  footer .logo-font {
+    color: LinkText;
+  }
+
+  :focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

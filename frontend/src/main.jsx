@@ -3,7 +3,8 @@ import ReactDOM from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
 import AuthProvider from "./context/AuthContext";
-import "./styles.css";
+import "./styles/tokens.css";
+import "./styles/global.css";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import Article from "./routes/Article/Article";
@@ -52,7 +53,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       </AuthProvider>
     </HashRouter>
   </React.StrictMode>,
-  );
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

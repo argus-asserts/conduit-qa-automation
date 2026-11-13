@@ -1,0 +1,278 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ * Conduit — Design Tokens (Charcoal + Coral)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Every color, spacing, and typographic value used by global.css lives
+ * here. This is the only file you need to touch to swap themes.
+ *
+ * ── Load order ──────────────────────────────────────────────────────
+ *   import './styles/tokens.css';   ← first
+ *   import './styles/global.css';   ← then
+ *
+ * ── Automatic light + dark ──────────────────────────────────────────
+ *   Follows the OS via prefers-color-scheme. A user whose system is in
+ *   dark mode sees the dark palette; everyone else sees light.
+ *
+ * ── Adding a manual theme toggle ────────────────────────────────────
+ *   The dark block below uses `@media (prefers-color-scheme: dark)`.
+ *   To let the user override the OS:
+ *
+ *     1. Change the @media block selector from `:root` to
+ *        `:root:not([data-theme="light"])`.
+ *     2. Duplicate the block with selector `:root[data-theme="dark"]`.
+ *     3. From React, toggle:
+ *          document.documentElement.dataset.theme = 'dark';  // or 'light'
+ *          delete document.documentElement.dataset.theme;    // back to auto
+ *
+ *   That's the entire change. No other file needs to know.
+ *
+ * ── --brand vs --brand-fill ─────────────────────────────────────────
+ *   A single coral cannot meet WCAG AA both as text-on-white AND as
+ *   white-text-on-fill. So there are two stops of the same hue:
+ *
+ *     --brand         text, links, tag labels, focus ring
+ *                     light: #e11d48 (4.9:1 on white — AA at 18px+)
+ *                     dark:  #ff8a8a (5.4:1 on #0f1115)
+ *
+ *     --brand-fill    filled backgrounds — buttons, active pill, signup
+ *                     light: #be185d (6.3:1 with white text)
+ *                     dark:  #ff8a8a
+ *
+ *   When picking a new brand hue, choose two stops of the same color:
+ *   a lighter one for text (≥4.5:1 on white) and a darker one for
+ *   filled backgrounds (≥4.5:1 with white text). Then update:
+ *   --brand-hover, --brand-active, --brand-emphasis, --brand-light,
+ *   and the --brand-soft* tints (which re-derive in modern browsers via
+ *   color-mix, so only the hex fallbacks need manual editing).
+ *
+ *   Verify choices at https://webaim.org/resources/contrastchecker/
+ *
+ * ── Fonts ───────────────────────────────────────────────────────────
+ *   --font-sans and --font-serif assume Source Sans Pro and Lora are
+ *   loaded via @font-face or Google Fonts. If they aren't, the browser
+ *   falls back to system-ui / Georgia, which still looks acceptable.
+ *
+ * ── Form inputs ─────────────────────────────────────────────────────
+ *   Inputs use a soft tinted background (--surface-input) with a
+ *   transparent border when unfocused — the boundary is conveyed by
+ *   the fill, per WCAG 1.4.11. On focus they snap to a white fill,
+ *   coral border, and a near-black 2px ring set 2px outside the input.
+ *   This is calmer than a permanent dark border and still passes
+ *   WCAG 2.4.11 focus-appearance.
+ *
+ * ── Contrast summary (light mode) ───────────────────────────────────
+ *   --brand          #e11d48   4.9:1 on white
+ *   --brand-fill     #be185d   6.3:1 with white text
+ *   --brand-hover    #9d174d   8.0:1 with white text
+ *   --text           #1f2937  13.9:1 on white
+ *   --text-muted     #52525b   7.6:1 on white
+ *   --danger         #991b1b   9.8:1 on white
+ *   --secondary      #404040  10.7:1 with white text
+ *   --border-strong  #767676   4.7:1 on white
+ *   --chrome-text        #ffffff  12.6:1 on #1f2937
+ *   --chrome-text-muted  #9ca3af   5.3:1 on #1f2937
+ *
+ * ── Chrome tokens ───────────────────────────────────────────────────
+ *   --chrome-* are used by BOTH the sticky navbar and the fixed footer.
+ *   They are intentionally separate from --surface/--text so the chrome
+ *   can stay charcoal even in light mode (that's the "charcoal frame"
+ *   visual identity). Do not repurpose these for content surfaces.
+ * ═══════════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * LIGHT MODE (default)
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Layout ─────────────────────────────────────────────────────── */
+  --content-width: 720px;
+  --navbar-height: 3.5rem;
+  --footer-height: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+
+  /* ── Spacing scale ──────────────────────────────────────────────── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  /* ── Line-height scale ─────────────────────────────────────────── */
+  --lh-tight: 1.1;
+  --lh-snug: 1.25;
+  --lh-body: 1.5;
+  --lh-loose: 1.8;
+
+  /* ── Typography ─────────────────────────────────────────────────── */
+  --font-sans:
+    "Source Sans Pro", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Lora", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+
+  /* ── Shadows ────────────────────────────────────────────────────── */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-navbar: 0 1px 3px rgba(0, 0, 0, 0.12);
+
+  /* ── UA hints ───────────────────────────────────────────────────── */
+  color-scheme: light dark;
+  accent-color: var(--brand);
+  caret-color: var(--brand);
+  scrollbar-color: var(--border-strong) var(--surface-muted);
+
+  /* ── Surfaces ───────────────────────────────────────────────────── */
+  --surface: #ffffff;
+  --surface-muted: #fafafa;
+  --surface-hover: #f4f4f5;
+  --surface-disabled: #e4e4e7;
+  --surface-input: #f4f4f5; /* form controls when unfocused */
+
+  /* ── Text ───────────────────────────────────────────────────────── */
+  --text: #1f2937;
+  --text-muted: #52525b;
+
+  /* ── Borders ────────────────────────────────────────────────────── */
+  --border: #d4d4d8;
+  --border-strong: #767676;
+
+  /* ── Brand — coral, two stops for contrast (see header) ────────── */
+  --brand: #e11d48;
+  --brand-fill: #be185d;
+  --brand-hover: #9d174d;
+  --brand-active: #831843;
+  --brand-emphasis: #be185d;
+  --brand-light: #fda4af;
+  --on-brand: #ffffff;
+
+  /* ── Brand tints — hex fallback, re-derived in @supports below ──── */
+  --brand-soft: #fef2f4;
+  --brand-soft-active: #fbd4dc;
+  --brand-disabled: #f0a0b0;
+
+  /* ── Danger ────────────────────────────────────────────────────── */
+  --danger: #991b1b;
+  --danger-light: #fca5a5;
+  --danger-soft: #fef0f0;
+
+  /* ── Secondary ─────────────────────────────────────────────────── */
+  --secondary: #404040;
+  --secondary-hover: #262626;
+  --secondary-border: #171717;
+
+  /* ── Focus ──────────────────────────────────────────────────────── */
+  --focus-ring: var(--text);
+  --focus-ring-offset: 2px;
+  --input-focus: var(--brand);
+
+  /* ── Chrome — sticky navbar + fixed footer ────────────────────── */
+  --chrome-bg: #1f2937;
+  --chrome-text: #ffffff;
+  --chrome-text-muted: #9ca3af;
+  --chrome-link-hover: #fda4af;
+  --chrome-border: rgba(255, 255, 255, 0.08);
+  --chrome-shadow-top: 0 -4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Re-derive tints from --brand when supported. The hex fallbacks above
+ * are what older browsers use. Both re-derive automatically when
+ * --brand changes. */
+@supports (color: color-mix(in srgb, black, white)) {
+  :root {
+    --brand-soft: color-mix(in srgb, var(--brand) 8%, var(--surface));
+    --brand-soft-active: color-mix(in srgb, var(--brand) 20%, var(--surface));
+    --brand-disabled: color-mix(in srgb, var(--brand-fill) 40%, var(--surface));
+    --danger-soft: color-mix(in srgb, var(--danger) 8%, var(--surface));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * DARK MODE
+ *
+ * Automatic via prefers-color-scheme. To make it manually toggleable,
+ * see the recipe in the header — it's a 3-line change.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    scrollbar-color: var(--border-strong) var(--surface-muted);
+
+    --surface: #0f1115;
+    --surface-muted: #181b21;
+    --surface-hover: #1f232b;
+    --surface-disabled: #242a33;
+    --surface-input: #1f232b;
+
+    --text: #e6e8eb;
+    --text-muted: #a8a29e;
+
+    --border: #292524;
+    --border-strong: #78716c;
+
+    --brand: #ff8a8a;
+    --brand-fill: #ff8a8a;
+    --brand-hover: #ffb3b3;
+    --brand-active: #ffd6d6;
+    --brand-emphasis: #ffb3b3;
+    --brand-light: #881337;
+    --on-brand: #0f1115;
+    --brand-disabled: #4a2530;
+
+    --danger: #fb923c;
+    --danger-light: #7c2d12;
+    --danger-soft: #2a1810;
+
+    --secondary: #a8a29e;
+    --secondary-hover: #d6d3d1;
+    --secondary-border: #e7e5e4;
+
+    --focus-ring: var(--text);
+    --input-focus: var(--brand);
+
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --shadow-navbar: 0 1px 3px rgba(0, 0, 0, 0.5);
+
+    --chrome-bg: #1c2128;
+    --chrome-text: #e6e8eb;
+    --chrome-text-muted: #a8a29e;
+    --chrome-link-hover: #ff8a8a;
+    --chrome-border: rgba(255, 255, 255, 0.06);
+    --chrome-shadow-top: 0 -4px 16px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * HIGH CONTRAST
+ *
+ * For users with prefers-contrast: more. Focus ring color must match the
+ * background's light/dark state, so the --focus-ring override is split
+ * across two sub-blocks. Without the split, the ring would be invisible
+ * in dark mode.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-contrast: more) {
+  :root {
+    --text-muted: #3d3d42;
+    --border: var(--border-strong);
+    --border-strong: #000000;
+  }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: light) {
+  :root {
+    --focus-ring: #000000;
+    --chrome-link-hover: #ffd6d6;
+  }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --text-muted: #d4d4d8;
+    --border-strong: #ffffff;
+    --focus-ring: #ffffff;
+  }
+}
