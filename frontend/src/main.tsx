@@ -20,7 +20,10 @@ import ProfileFavArticles from "./routes/Profile/ProfileFavArticles";
 import Settings from "./routes/Settings";
 import SignUp from "./routes/SignUp";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Root element '#root' not found");
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HashRouter>
       <AuthProvider>
